@@ -2016,7 +2016,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  rotSpeed: 100
+  rotSpeed: 200
   Weapon: {fileID: 5962876804356630874}
 --- !u!1 &2807457135498197474
 GameObject:
@@ -3367,7 +3367,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectTofollow: {fileID: 974967024}
   FollowSpeed: 10
-  Sensitivity: 100
+  Sensitivity: 200
   ClampAngle: 70
   smoothness: 10
   realCamera: {fileID: 5681392299447426067}

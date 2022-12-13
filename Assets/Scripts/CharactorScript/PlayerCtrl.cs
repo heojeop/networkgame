@@ -32,7 +32,7 @@ public class PlayerCtrl : MonoBehaviour
             Move();
             if (Input.GetMouseButtonDown(0))
             {
-                Attack();
+                animator.SetTrigger("Attack");
             }
            
         }
@@ -58,14 +58,14 @@ public class PlayerCtrl : MonoBehaviour
     }
 
 
-    private void Attack()
+    private void AttackStart()
     {
         Weapon.SetActive(true);
-        animator.SetTrigger("Attack");
+
 
     }
 
-    private void Attacked()
+    private void AttackEnd()
     {
         Weapon.SetActive(false);
     }

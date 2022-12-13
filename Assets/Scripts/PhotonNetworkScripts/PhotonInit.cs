@@ -3,49 +3,68 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.UI;
+
 public class PhotonInit : MonoBehaviourPunCallbacks
 {
+    public InputField Bots;
+    public GameObject LobbyUI;
+    public GameObject MainUI;
+    public GameObject MasterUI;
+    public InputField PlayerName;
     public GameObject SpawnPoint;
+
     private readonly string version = " 1.0 ";
-    private string PlayerName = "";
 
     void Awake()
     {
+
+        MainUI.SetActive(true);
+        MasterUI.SetActive(false);
+        LobbyUI.SetActive(false);
+
+        Screen.SetResolution(1600, 900, false);
+        PhotonNetwork.SendRate = 60;
         PhotonNetwork.AutomaticallySyncScene = true;
-
         PhotonNetwork.GameVersion = version;
-
-        PhotonNetwork.NickName = PlayerName;
-
         Debug.Log(PhotonNetwork.SendRate);
-
         PhotonNetwork.ConnectUsingSettings();
     }
 
+
     public override void OnConnectedToMaster() // 서버 접속 후 Callback
     {
+
         Debug.Log(" Connected On Master ");
-        Debug.Log($"PhotonNetwork.InLobby = {PhotonNetwork.InLobby}");
-        PhotonNetwork.JoinLobby();
+
+
     }
+    public void JoinGameBtn()
+    {
+        PhotonNetwork.NickName = PlayerName.text;
+        PhotonNetwork.JoinLobby();
+        if (string.IsNullOrEmpty(PlayerName.text))
+        {
+            PlayerName.text = $"USER_{Random.Range(0, 100):00}";
+        }
+    }
+
+        
 
     public override void OnJoinedLobby() // Lobby 접속 후 Callback
     {
+
         Debug.Log(" Connect On Lobby ");
         Debug.Log($"PhotonNetwork.InLobby = {PhotonNetwork.InLobby}");
-        PhotonNetwork.JoinRandomRoom();  // Random Match Making
+        PhotonNetwork.JoinOrCreateRoom(" My Room ", new RoomOptions { MaxPlayers = 4 }, null);
+
     }
+
 
     public override void OnJoinRandomFailed(short returnCode, string message) // Room 입장 실패 후 CallBack
     {
-        Debug.Log($"JoinRandomFailed {returnCode}:{message}");
 
-        RoomOptions roomopstion = new RoomOptions();
-        roomopstion.MaxPlayers = 20;  // 최대 접속 가능 플레이어 수
-        roomopstion.IsOpen = true; // 룸 오픈 여부
-        roomopstion.IsVisible = true; // 룸 로비 노출 여부 공개 / 비공개 
-
-        PhotonNetwork.CreateRoom(" My Room ", roomopstion);        
+        Debug.Log(" Room Failed ");
     }
 
     public override void OnCreatedRoom() // 룸 생성 완료 후
@@ -57,8 +76,25 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom() // 룸 입장 후
     {
         Debug.Log($" Joined Room = {PhotonNetwork.InRoom}");
-        Debug.Log($"Current Player = {PhotonNetwork.CurrentRoom.PlayerCount}");
+        Debug.Log($" Current Player = {PhotonNetwork.CurrentRoom.PlayerCount}");
+        Debug.Log($" Player Name = {PhotonNetwork.CurrentRoom.Players}");
+        MainUI.SetActive(false);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            MasterUI.SetActive(true);
+        }
+        else
+        {
+            LobbyUI.SetActive(true);
+        }
 
+    }
+    [PunRPC]
+    public void GameStartBtn()
+    {
+
+        MasterUI.SetActive(false);
+        LobbyUI.SetActive(false);
         foreach (var Player in PhotonNetwork.CurrentRoom.Players)
         {
             Debug.Log($"{Player.Value.NickName},{Player.Value.ActorNumber}");
@@ -68,6 +104,7 @@ public class PhotonInit : MonoBehaviourPunCallbacks
         int idx = Random.Range(1, SpawnPoints.Length);
 
         PhotonNetwork.Instantiate("Player", SpawnPoints[idx].position, SpawnPoints[idx].rotation, 0);
+
     }
 
     // Start is called before the first frame update
