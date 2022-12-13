@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 
-public class PlayerCtrl : MonoBehaviour
+public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable 
 {
 
     private float h = 0f;
@@ -17,13 +18,28 @@ public class PlayerCtrl : MonoBehaviour
     public GameObject Weapon;
     private Animator animator;
 
+
+    private Vector3 currPos;
+    private Quaternion currRot;
     void Start()
     {
         tr = GetComponent<Transform>();
         animator = GetComponent<Animator>();
         pv = GetComponent<PhotonView>();
 
+        pv.ObservedComponents[0] = this;
+
+        if (pv.IsMine)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            Camera.main.GetComponent<FollowCam>().targetTr = tr.Find("Cube").gameObject.transform;
+            //Camera.main.GetComponent<FollowCam>().targetTr = tr;
+        }
+
+        
     }
+
 
     void Update()
     {
@@ -34,8 +50,23 @@ public class PlayerCtrl : MonoBehaviour
             {
                 animator.SetTrigger("Attack");
             }
-           
+
         }
+        else
+        {
+            if(tr.position != currPos)
+            {
+                animator.SetFloat("Speed", 1.0f);
+            }
+            else
+            {
+                animator.SetFloat("Speed", 0.0f);
+            }
+            tr.position = Vector3.Lerp(tr.position, currPos, Time.deltaTime * 10.0f);
+            tr.rotation = Quaternion.Lerp(tr.rotation, currRot, Time.deltaTime * 10.0f);
+        }
+
+
     }
 
     private void Move()
@@ -71,6 +102,15 @@ public class PlayerCtrl : MonoBehaviour
     }
 
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Weapon")
+        {
+            animator.SetTrigger("Death");
+        }
+    }
+
+
 
     IEnumerator Attacking()
     {
@@ -78,5 +118,17 @@ public class PlayerCtrl : MonoBehaviour
         yield return new WaitForSeconds(5.0f);
     }
 
-
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(tr.position);
+            stream.SendNext(tr.rotation);
+        }
+        else
+        {
+            currPos = (Vector3)stream.ReceiveNext();
+            currRot = (Quaternion)stream.ReceiveNext();
+        }
+    }
 }

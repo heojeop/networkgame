@@ -10,6 +10,7 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     public InputField Bots;
     public GameObject LobbyUI;
     public GameObject MainUI;
+    public Text Status;
     public GameObject MasterUI;
     public InputField PlayerName;
     public GameObject SpawnPoint;
@@ -35,6 +36,7 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster() // 서버 접속 후 Callback
     {
 
+        Status.text = "Online";
         Debug.Log(" Connected On Master ");
 
 
@@ -56,7 +58,7 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
         Debug.Log(" Connect On Lobby ");
         Debug.Log($"PhotonNetwork.InLobby = {PhotonNetwork.InLobby}");
-        PhotonNetwork.JoinOrCreateRoom(" My Room ", new RoomOptions { MaxPlayers = 4 }, null);
+        PhotonNetwork.JoinOrCreateRoom(" Game Room ", new RoomOptions { MaxPlayers = 4 }, null);
 
     }
 
@@ -79,22 +81,15 @@ public class PhotonInit : MonoBehaviourPunCallbacks
         Debug.Log($" Current Player = {PhotonNetwork.CurrentRoom.PlayerCount}");
         Debug.Log($" Player Name = {PhotonNetwork.CurrentRoom.Players}");
         MainUI.SetActive(false);
-        if (PhotonNetwork.IsMasterClient)
-        {
-            MasterUI.SetActive(true);
-        }
-        else
-        {
-            LobbyUI.SetActive(true);
-        }
-
+        MasterUI.SetActive(true);
     }
-    [PunRPC]
     public void GameStartBtn()
     {
 
         MasterUI.SetActive(false);
         LobbyUI.SetActive(false);
+
+        BotSpawn();
         foreach (var Player in PhotonNetwork.CurrentRoom.Players)
         {
             Debug.Log($"{Player.Value.NickName},{Player.Value.ActorNumber}");
@@ -104,6 +99,18 @@ public class PhotonInit : MonoBehaviourPunCallbacks
         int idx = Random.Range(1, SpawnPoints.Length);
 
         PhotonNetwork.Instantiate("Player", SpawnPoints[idx].position, SpawnPoints[idx].rotation, 0);
+    }
+
+    void BotSpawn()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Transform[] SpawnPoints = SpawnPoint.GetComponentsInChildren<Transform>();
+            int idx = Random.Range(1, SpawnPoints.Length);
+
+            PhotonNetwork.Instantiate("Enemy", SpawnPoints[idx].position, SpawnPoints[idx].rotation, 0);
+        }
+
 
     }
 
