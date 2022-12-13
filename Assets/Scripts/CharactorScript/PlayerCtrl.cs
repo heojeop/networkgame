@@ -9,10 +9,12 @@ public class PlayerCtrl : MonoBehaviour
     private float h = 0f;
     private float v = 0f;
 
+
     private PhotonView pv;
     private Transform tr;
     public float speed = 10.0f;
     public float rotSpeed = 100.0f;
+    public GameObject Weapon;
     private Animator animator;
 
     void Start()
@@ -21,7 +23,6 @@ public class PlayerCtrl : MonoBehaviour
         animator = GetComponent<Animator>();
         pv = GetComponent<PhotonView>();
 
-
     }
 
     void Update()
@@ -29,6 +30,11 @@ public class PlayerCtrl : MonoBehaviour
         if (pv.IsMine)
         {
             Move();
+            if (Input.GetMouseButtonDown(0))
+            {
+                Attack();
+            }
+           
         }
     }
 
@@ -50,4 +56,27 @@ public class PlayerCtrl : MonoBehaviour
             animator.SetFloat("Speed", 0.0f);
         }
     }
+
+
+    private void Attack()
+    {
+        Weapon.SetActive(true);
+        animator.SetTrigger("Attack");
+
+    }
+
+    private void Attacked()
+    {
+        Weapon.SetActive(false);
+    }
+
+
+
+    IEnumerator Attacking()
+    {
+
+        yield return new WaitForSeconds(5.0f);
+    }
+
+
 }
