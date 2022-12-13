@@ -31,10 +31,10 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
         if (pv.IsMine)
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            //Cursor.lockState = CursorLockMode.Locked;
+            //Cursor.visible = false;
             Camera.main.GetComponent<FollowCam>().targetTr = tr.Find("Cube").gameObject.transform;
-            //Camera.main.GetComponent<FollowCam>().targetTr = tr;
+
         }
 
         
@@ -89,8 +89,11 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     }
 
 
+
+
     private void AttackStart()
     {
+
         Weapon.SetActive(true);
 
 

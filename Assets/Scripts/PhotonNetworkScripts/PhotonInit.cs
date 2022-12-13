@@ -14,7 +14,9 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     public GameObject MasterUI;
     public InputField PlayerName;
     public GameObject SpawnPoint;
+    PhotonView pv;
 
+    private List<Transform> SpawnPointList = new List<Transform>();
     private readonly string version = " 1.0 ";
 
     void Awake()
@@ -39,10 +41,10 @@ public class PhotonInit : MonoBehaviourPunCallbacks
         Status.text = "Online";
         Debug.Log(" Connected On Master ");
 
-
     }
     public void JoinGameBtn()
     {
+
         PhotonNetwork.NickName = PlayerName.text;
         PhotonNetwork.JoinLobby();
         if (string.IsNullOrEmpty(PlayerName.text))
@@ -50,16 +52,12 @@ public class PhotonInit : MonoBehaviourPunCallbacks
             PlayerName.text = $"USER_{Random.Range(0, 100):00}";
         }
     }
-
-        
-
     public override void OnJoinedLobby() // Lobby 접속 후 Callback
     {
 
         Debug.Log(" Connect On Lobby ");
         Debug.Log($"PhotonNetwork.InLobby = {PhotonNetwork.InLobby}");
         PhotonNetwork.JoinOrCreateRoom(" Game Room ", new RoomOptions { MaxPlayers = 4 }, null);
-
     }
 
 
@@ -77,47 +75,72 @@ public class PhotonInit : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom() // 룸 입장 후
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            MasterUI.SetActive(true);
+            MainUI.SetActive(false);
+        }
+        else
+        {
+            LobbyUI.SetActive(true);
+            MainUI.SetActive(false);
+        }
         Debug.Log($" Joined Room = {PhotonNetwork.InRoom}");
         Debug.Log($" Current Player = {PhotonNetwork.CurrentRoom.PlayerCount}");
         Debug.Log($" Player Name = {PhotonNetwork.CurrentRoom.Players}");
-        MainUI.SetActive(false);
-        MasterUI.SetActive(true);
+
+
+
+
     }
     public void GameStartBtn()
     {
+        
+        photonView.RPC("BotSpawn", RpcTarget.All);
+        photonView.RPC("SpawnPlayer", RpcTarget.All);
 
+ 
+
+    }
+
+    [PunRPC]
+    void BotSpawn ()
+    {
+
+        int a = int.Parse(Bots.text);
+        if(a > 20)
+        {
+            Bots.text = "20";
+        }
+        for (int i = 0; i < a; i++)
+        {
+            int idx = Random.Range(1, SpawnPointList.Count);
+            PhotonNetwork.Instantiate("Enemy", SpawnPointList[idx].position, SpawnPointList[idx].rotation, 0);
+            SpawnPointList.RemoveAt(idx);
+        }
+    }
+    [PunRPC]
+    void SpawnPlayer()
+    {
         MasterUI.SetActive(false);
         LobbyUI.SetActive(false);
-
-        BotSpawn();
         foreach (var Player in PhotonNetwork.CurrentRoom.Players)
         {
             Debug.Log($"{Player.Value.NickName},{Player.Value.ActorNumber}");
         }
-
-        Transform[] SpawnPoints = SpawnPoint.GetComponentsInChildren<Transform>();
-        int idx = Random.Range(1, SpawnPoints.Length);
-
-        PhotonNetwork.Instantiate("Player", SpawnPoints[idx].position, SpawnPoints[idx].rotation, 0);
-    }
-
-    void BotSpawn()
-    {
-        for (int i = 0; i < 10; i++)
-        {
-            Transform[] SpawnPoints = SpawnPoint.GetComponentsInChildren<Transform>();
-            int idx = Random.Range(1, SpawnPoints.Length);
-
-            PhotonNetwork.Instantiate("Enemy", SpawnPoints[idx].position, SpawnPoints[idx].rotation, 0);
-        }
-
-
+        int idx = Random.Range(1, SpawnPointList.Count);
+        PhotonNetwork.Instantiate("Player", SpawnPointList[idx].position, SpawnPointList[idx].rotation, 0);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
+        Transform[] SpawnPoints = SpawnPoint.GetComponentsInChildren<Transform>();
+        foreach (Transform pos in SpawnPoints)
+        {
+            SpawnPointList.Add(pos);
+        }
     }
 
     // Update is called once per frame
