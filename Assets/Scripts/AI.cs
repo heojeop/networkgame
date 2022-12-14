@@ -24,19 +24,13 @@ public class AI : MonoBehaviour
         Enemy_animator = GetComponent<Animator>();
 
     }
-    private void Move()
-    {
-        h = Input.GetAxis("Horizontal");
-        v = Input.GetAxis("Vertical");
 
-    }
     void SetRandom()
     {
         time = UnityEngine.Random.Range(4.0f, 7.0f);
-        rotateTime = UnityEngine.Random.Range(0.0f, 1.0f);
+        rotateTime = UnityEngine.Random.Range(0.0f, 2.0f);
         stopTime = UnityEngine.Random.Range(1.0f, 3.0f);
-        v = UnityEngine.Random.Range(-1.0f, 1.0f);
-        h = UnityEngine.Random.Range(-1.0f, 1.0f);
+        v = UnityEngine.Random.Range(1.0f, 2.0f);
     }
 
     void Update()
@@ -47,7 +41,7 @@ public class AI : MonoBehaviour
         state = 2 -> 정지
         */
 
-        Vector3 moveDir = (Vector3.forward * v) + (Vector3.right * h);
+       
 
         switch (state)
         {
@@ -61,7 +55,11 @@ public class AI : MonoBehaviour
 
                     m_currentV = Mathf.Lerp(m_currentV, v, Time.deltaTime * m_interpolation);
 
+<<<<<<< HEAD
+                    this.transform.Translate(Vector3.forward * v * speed * Time.deltaTime);
+=======
                     this.transform.Translate(Vector3.forward * v * Time.deltaTime);
+>>>>>>> 6e24936345188136d47975009b2c7fb604e261b3
                     this.transform.Rotate(Vector3.up * v * Time.deltaTime);
                     Enemy_animator.SetBool("IsTrace", true); //애니메이션 갱신
                     time -= Time.deltaTime;
