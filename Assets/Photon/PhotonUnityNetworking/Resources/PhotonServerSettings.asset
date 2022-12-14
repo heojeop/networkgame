@@ -43,6 +43,9 @@ MonoBehaviour:
   - BotSpawn
   - SpawnPlayer
   - MurdererChoice
+  - PlayerDeath
+  - PlayerMove
+  - Move
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

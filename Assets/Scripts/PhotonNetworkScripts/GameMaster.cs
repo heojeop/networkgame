@@ -23,11 +23,12 @@ public class GameMaster : MonoBehaviourPunCallbacks
     void Start()
     {
 
-        Transform[] SpawnPoints = SpawnPoint.GetComponentsInChildren<Transform>();
-        foreach (Transform pos in SpawnPoints)
-        {
-            SpawnPointList.Add(pos);
-        }
+            Transform[] SpawnPoints = SpawnPoint.GetComponentsInChildren<Transform>();
+            foreach (Transform pos in SpawnPoints)
+            {
+                SpawnPointList.Add(pos);
+            }
+
     }
 
     // Update is called once per frame
@@ -65,7 +66,6 @@ public class GameMaster : MonoBehaviourPunCallbacks
     [PunRPC]
     void SpawnPlayer()
     {
-
         LobbyUI.SetActive(false);
         MasterUI.SetActive(false);
         MainMenu.SetActive(false);
@@ -76,5 +76,12 @@ public class GameMaster : MonoBehaviourPunCallbacks
             int idx = Random.Range(1, SpawnPointList.Count);
             PhotonNetwork.Instantiate("Player", SpawnPointList[idx].position, SpawnPointList[idx].rotation, 0);
     }
+
+    void CheckPlayer()
+    {
+
+    }
+
+
 
 }

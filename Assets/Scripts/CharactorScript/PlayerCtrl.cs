@@ -11,6 +11,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     private float v = 0f;
 
 
+    private bool IsDeath = false;
     private PhotonView pv;
     private Transform tr;
     public float speed = 10.0f;
@@ -43,6 +44,9 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
     void Update()
     {
+
+        photonView.RPC("PlayerDeath", RpcTarget.All);
+
         if (pv.IsMine)
         {
             Move();
@@ -69,6 +73,10 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
     }
 
+    
+    
+
+    [PunRPC]
     private void Move()
     {
         h = Input.GetAxis("Horizontal");
@@ -104,10 +112,22 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "Weapon")
+        if (other.gameObject.tag == "Weapon")
         {
+            IsDeath = true;
             animator.SetTrigger("Death");
         }
+    }
+
+    [PunRPC]
+    void PlayerDeath()
+    {
+        if(IsDeath == true && pv.IsMine)
+        {
+            gameObject.GetComponent<CapsuleCollider>().enabled = false;
+            gameObject.GetComponent<PlayerCtrl>().enabled = false;
+        }
+
     }
 
 
