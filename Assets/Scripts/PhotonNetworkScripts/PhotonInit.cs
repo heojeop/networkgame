@@ -7,13 +7,12 @@ using UnityEngine.UI;
 
 public class PhotonInit : MonoBehaviourPunCallbacks
 {
- 
+   
+    public Text Status;
     public GameObject LobbyUI;
     public GameObject MainUI;
-    public Text Status;
     public GameObject MasterUI;
     public InputField PlayerName;
-    public GameObject SpawnPoint;
     PhotonView pv;
 
     private readonly string version = " 1.0 ";

@@ -55,11 +55,11 @@ public class AI : MonoBehaviour
 
                     m_currentV = Mathf.Lerp(m_currentV, v, Time.deltaTime * m_interpolation);
 
-<<<<<<< HEAD
+
                     this.transform.Translate(Vector3.forward * v * speed * Time.deltaTime);
-=======
+
                     this.transform.Translate(Vector3.forward * v * Time.deltaTime);
->>>>>>> 6e24936345188136d47975009b2c7fb604e261b3
+
                     this.transform.Rotate(Vector3.up * v * Time.deltaTime);
                     Enemy_animator.SetBool("IsTrace", true); //애니메이션 갱신
                     time -= Time.deltaTime;

@@ -69,6 +69,7 @@ public class GameMaster : MonoBehaviourPunCallbacks
         LobbyUI.SetActive(false);
         MasterUI.SetActive(false);
         MainMenu.SetActive(false);
+        Muderer();
         foreach (var Player in PhotonNetwork.CurrentRoom.Players)
             {
                 Debug.Log($"{Player.Value.NickName},{Player.Value.ActorNumber}");
@@ -77,9 +78,8 @@ public class GameMaster : MonoBehaviourPunCallbacks
             PhotonNetwork.Instantiate("Player", SpawnPointList[idx].position, SpawnPointList[idx].rotation, 0);
     }
 
-    void CheckPlayer()
+    void Muderer()
     {
-
     }
 
 

@@ -10,7 +10,7 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
     private float h = 0f;
     private float v = 0f;
 
-
+    bool Murderer = false;
     private bool IsDeath = false;
     private PhotonView pv;
     private Transform tr;
@@ -94,6 +94,11 @@ public class PlayerCtrl : MonoBehaviourPunCallbacks, IPunObservable
         {
             animator.SetFloat("Speed", 0.0f);
         }
+    }
+
+    public void SetMuderer()
+    {
+        Murderer = true;
     }
 
 

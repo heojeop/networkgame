@@ -14,17 +14,27 @@ public class Call : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.F))
+
+
+    }
+
+
+    private void OnTriggerStay(Collider other)
+    {
+        if(other.gameObject.tag == "Player")
         {
-            Target.SetActive(true);
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            Target.SetActive(false);
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            if (Input.GetKey(KeyCode.F))
+            {
+                Target.SetActive(true);
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                Target.SetActive(false);
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
         }
     }
 }
