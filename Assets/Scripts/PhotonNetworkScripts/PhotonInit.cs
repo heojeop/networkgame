@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class PhotonInit : MonoBehaviourPunCallbacks
 {
-    public InputField Bots;
+ 
     public GameObject LobbyUI;
     public GameObject MainUI;
     public Text Status;
@@ -16,7 +16,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks
     public GameObject SpawnPoint;
     PhotonView pv;
 
-    private List<Transform> SpawnPointList = new List<Transform>();
     private readonly string version = " 1.0 ";
 
     void Awake()
@@ -25,7 +24,6 @@ public class PhotonInit : MonoBehaviourPunCallbacks
         MainUI.SetActive(true);
         MasterUI.SetActive(false);
         LobbyUI.SetActive(false);
-
         Screen.SetResolution(1600, 900, false);
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -90,52 +88,11 @@ public class PhotonInit : MonoBehaviourPunCallbacks
         Debug.Log($" Player Name = {PhotonNetwork.CurrentRoom.Players}");
     
     }
-    public void GameStartBtn()
-    {
-
-        photonView.RPC("BotSpawn", RpcTarget.All);
-        photonView.RPC("SpawnPlayer", RpcTarget.All);
-
-    }
-
-    [PunRPC]
-    void BotSpawn()
-    {
-
-        int a = int.Parse(Bots.text);
-        if (a > 20)
-        {
-            Bots.text = "20";
-        }
-        for (int i = 0; i < a; i++)
-        {
-            int idx = Random.Range(1, SpawnPointList.Count);
-            PhotonNetwork.Instantiate("Enemy", SpawnPointList[idx].position, SpawnPointList[idx].rotation, 0);
-            SpawnPointList.RemoveAt(idx);
-        }
-    }
-    [PunRPC]
-    void SpawnPlayer()
-    {
-        MasterUI.SetActive(false);
-        LobbyUI.SetActive(false);
-        foreach (var Player in PhotonNetwork.CurrentRoom.Players)
-        {
-            Debug.Log($"{Player.Value.NickName},{Player.Value.ActorNumber}");
-        }
-        int idx = Random.Range(1, SpawnPointList.Count);
-        PhotonNetwork.Instantiate("Player", SpawnPointList[idx].position, SpawnPointList[idx].rotation, 0);
-    }
 
     // Start is called before the first frame update
     void Start()
     {
-
-        Transform[] SpawnPoints = SpawnPoint.GetComponentsInChildren<Transform>();
-        foreach (Transform pos in SpawnPoints)
-        {
-            SpawnPointList.Add(pos);
-        }
+        
     }
 
     // Update is called once per frame
